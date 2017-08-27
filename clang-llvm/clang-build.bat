@@ -39,9 +39,9 @@ set DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common
 set ROOTDIR=%INITDIR%\llvm
 
 if "%CONFIGURATION%" == "" (
-	set BUILDDIR=%ROOTDIR%\build-%BUILDTOOL%-%BUILD_ARCH%
+	set BUILDDIR=%INITDIR%\build-%BUILDTOOL%-%BUILD_ARCH%
 ) else (
-	set BUILDDIR=%ROOTDIR%\build-%BUILDTOOL%-%BUILD_ARCH%-%CONFIGURATION%
+	set BUILDDIR=%INITDIR%\build-%BUILDTOOL%-%BUILD_ARCH%-%CONFIGURATION%
 )
 
 if exist %ROOTDIR% (
