@@ -1,5 +1,6 @@
 @echo off
 
+set INITDIR=%CD%
 set PARAM_BUILDTOOL=%1
 if "%PARAM_BUILDTOOL%" == "ninja" (
 	set BUILDTOOL=%PARAM_BUILDTOOL%
@@ -35,7 +36,7 @@ if "%PARAM_ACTION%" == "rebuild" (
 set CMAKE=cmake.exe
 set NINJA=ninja.exe
 set DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.com"
-set ROOTDIR=%~dp0llvm
+set ROOTDIR=%INITDIR%\llvm
 
 if "%CONFIGURATION%" == "" (
 	set BUILDDIR=%ROOTDIR%\build-%BUILDTOOL%-%BUILD_ARCH%
@@ -117,11 +118,11 @@ if "%BUILDTOOL%" == "ninja" (
 	%DEVENV% LLVM.sln  /build "Release|%PARAM_ARCH%" || goto onerror
 )
 
-cd /d %~dp0
+cd /d %INITDIR%\
 exit /b 0
 
 :onerror
-cd /d %~dp0
+cd /d %INITDIR%\
 exit /b 1
 
 :SHOW_HELP
