@@ -33,58 +33,63 @@ if "%PARAM_ACTION%" == "rebuild" (
 	set BUILD_ACTION=update
 )
 
+set REVISION=%4
+if "%REVISION%" == "" (
+	set REVISION=HEAD
+)
+
 set CMAKE=cmake.exe
 set NINJA=ninja.exe
 set DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.com"
-set ROOTDIR=%INITDIR%\llvm
+set ROOTDIR=%INITDIR%\llvm-%REVISION%
 
 if "%CONFIGURATION%" == "" (
-	set BUILDDIR=%INITDIR%\build-%BUILDTOOL%-%BUILD_ARCH%
+	set BUILDDIR=%ROOTDIR%\build-%BUILDTOOL%-%BUILD_ARCH%
 ) else (
-	set BUILDDIR=%INITDIR%\build-%BUILDTOOL%-%BUILD_ARCH%-%CONFIGURATION%
+	set BUILDDIR=%ROOTDIR%\build-%BUILDTOOL%-%BUILD_ARCH%-%CONFIGURATION%
 )
 
 if exist %ROOTDIR% (
-	svn update  %ROOTDIR%
+	svn update -r %REVISION%  %ROOTDIR%
 ) else (
-	svn co    http://llvm.org/svn/llvm-project/llvm/trunk        %ROOTDIR%
+	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/llvm/trunk        %ROOTDIR%
 )
 
 if exist %ROOTDIR%\tools\clang (
-	svn update  %ROOTDIR%\tools\clang
+	svn update -r %REVISION%  %ROOTDIR%\tools\clang
 ) else (
-	svn co    http://llvm.org/svn/llvm-project/cfe/trunk         %ROOTDIR%\tools\clang
+	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/cfe/trunk         %ROOTDIR%\tools\clang
 )
 
 if exist %ROOTDIR%\tools\lld (
-	svn update  %ROOTDIR%\tools\lld
+	svn update -r %REVISION%  %ROOTDIR%\tools\lld
 ) else (
-	svn co    http://llvm.org/svn/llvm-project/lld/trunk         %ROOTDIR%\tools\lld
+	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/lld/trunk         %ROOTDIR%\tools\lld
 )
 
 if exist %ROOTDIR%\tools\polly (
-	svn update  %ROOTDIR%\tools\polly
+	svn update -r %REVISION%  %ROOTDIR%\tools\polly
 ) else (
-	svn co    http://llvm.org/svn/llvm-project/polly/trunk       %ROOTDIR%\tools\polly
+	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/polly/trunk       %ROOTDIR%\tools\polly
 )
 
 if exist %ROOTDIR%\projects\compiler-rt (
-	svn update  %ROOTDIR%\projects\compiler-rt
+	svn update -r %REVISION%  %ROOTDIR%\projects\compiler-rt
 ) else (
-	svn co    http://llvm.org/svn/llvm-project/compiler-rt/trunk %ROOTDIR%\projects\compiler-rt
+	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/compiler-rt/trunk %ROOTDIR%\projects\compiler-rt
 )
 
 if exist %ROOTDIR%\projects\libcxx (
-	svn update  %ROOTDIR%\projects\libcxx
+	svn update -r %REVISION%  %ROOTDIR%\projects\libcxx
 ) else (
-	svn co    http://llvm.org/svn/llvm-project/libcxx/trunk      %ROOTDIR%\projects\libcxx
+	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/libcxx/trunk      %ROOTDIR%\projects\libcxx
 )
 
 
 if exist %ROOTDIR%\projects\libcxxabi (
-	svn update  %ROOTDIR%\projects\libcxxabi
+	svn update -r %REVISION%  %ROOTDIR%\projects\libcxxabi
 ) else (
-	svn co    http://llvm.org/svn/llvm-project/libcxxabi/trunk   %ROOTDIR%\projects\libcxxabi
+	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/libcxxabi/trunk   %ROOTDIR%\projects\libcxxabi
 )
 
 if "%BUILD_ACTION%" == "rebuild" (
@@ -110,6 +115,7 @@ del /Q LLVM-*.exe
 
 @echo on
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %BUILD_ARCH%
+cd /d %BUILDDIR%
 if "%BUILDTOOL%" == "ninja" (
 	%CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang -D CMAKE_BUILD_TYPE=%CONFIGURATION% %ROOTDIR% || goto onerror
 	%NINJA% -v package || goto onerror
@@ -119,10 +125,12 @@ if "%BUILDTOOL%" == "ninja" (
 )
 
 cd /d %INITDIR%\
+echo OK
 exit /b 0
 
 :onerror
 cd /d %INITDIR%\
+echo NG
 exit /b 1
 
 :SHOW_HELP
