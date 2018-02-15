@@ -50,45 +50,59 @@ if "%CONFIGURATION%" == "" (
 )
 
 if exist %ROOTDIR% (
+	echo svn update -r %REVISION%  %ROOTDIR%
 	svn update -r %REVISION%  %ROOTDIR%
 ) else (
+	echo svn co -r %REVISION%    http://llvm.org/svn/llvm-project/llvm/trunk        %ROOTDIR%
 	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/llvm/trunk        %ROOTDIR%
 )
 
 if exist %ROOTDIR%\tools\clang (
+	echo svn update -r %REVISION%  %ROOTDIR%\tools\clang
 	svn update -r %REVISION%  %ROOTDIR%\tools\clang
 ) else (
+	echo svn co -r %REVISION%    http://llvm.org/svn/llvm-project/cfe/trunk         %ROOTDIR%\tools\clang
 	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/cfe/trunk         %ROOTDIR%\tools\clang
 )
 
 if exist %ROOTDIR%\tools\lld (
+	echo svn update -r %REVISION%  %ROOTDIR%\tools\lld
 	svn update -r %REVISION%  %ROOTDIR%\tools\lld
 ) else (
+	echo svn co -r %REVISION%    http://llvm.org/svn/llvm-project/lld/trunk         %ROOTDIR%\tools\lld
 	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/lld/trunk         %ROOTDIR%\tools\lld
 )
 
 if exist %ROOTDIR%\tools\polly (
+	echo svn update -r %REVISION%  %ROOTDIR%\tools\polly
 	svn update -r %REVISION%  %ROOTDIR%\tools\polly
 ) else (
+	echo svn co -r %REVISION%    http://llvm.org/svn/llvm-project/polly/trunk       %ROOTDIR%\tools\polly
 	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/polly/trunk       %ROOTDIR%\tools\polly
 )
 
 if exist %ROOTDIR%\projects\compiler-rt (
+	echo svn update -r %REVISION%  %ROOTDIR%\projects\compiler-rt
 	svn update -r %REVISION%  %ROOTDIR%\projects\compiler-rt
 ) else (
+	echo svn co -r %REVISION%    http://llvm.org/svn/llvm-project/compiler-rt/trunk %ROOTDIR%\projects\compiler-rt
 	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/compiler-rt/trunk %ROOTDIR%\projects\compiler-rt
 )
 
 if exist %ROOTDIR%\projects\libcxx (
+	echo svn update -r %REVISION%  %ROOTDIR%\projects\libcxx
 	svn update -r %REVISION%  %ROOTDIR%\projects\libcxx
 ) else (
+	echo svn co -r %REVISION%    http://llvm.org/svn/llvm-project/libcxx/trunk      %ROOTDIR%\projects\libcxx
 	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/libcxx/trunk      %ROOTDIR%\projects\libcxx
 )
 
 
 if exist %ROOTDIR%\projects\libcxxabi (
+	echo svn update -r %REVISION%  %ROOTDIR%\projects\libcxxabi
 	svn update -r %REVISION%  %ROOTDIR%\projects\libcxxabi
 ) else (
+	echo svn co -r %REVISION%    http://llvm.org/svn/llvm-project/libcxxabi/trunk   %ROOTDIR%\projects\libcxxabi
 	svn co -r %REVISION%    http://llvm.org/svn/llvm-project/libcxxabi/trunk   %ROOTDIR%\projects\libcxxabi
 )
 
@@ -114,13 +128,22 @@ cd /d %BUILDDIR%
 del /Q LLVM-*.exe
 
 @echo on
+echo call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %BUILD_ARCH%
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %BUILD_ARCH%
+
+echo cd /d %BUILDDIR%
 cd /d %BUILDDIR%
 if "%BUILDTOOL%" == "ninja" (
+	echo %CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang -D CMAKE_BUILD_TYPE=%CONFIGURATION% %ROOTDIR% || goto onerror
 	%CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang -D CMAKE_BUILD_TYPE=%CONFIGURATION% %ROOTDIR% || goto onerror
+
+	echo %NINJA% -v package
 	%NINJA% -v package || goto onerror
 ) else if "%BUILDTOOL%" == "vs2017" (
+	echo %CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang %ROOTDIR% || goto onerror
 	%CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang %ROOTDIR% || goto onerror
+
+	echo %DEVENV% LLVM.sln  /build "Release|%PARAM_ARCH%"
 	%DEVENV% LLVM.sln  /build "Release|%PARAM_ARCH%" || goto onerror
 )
 
