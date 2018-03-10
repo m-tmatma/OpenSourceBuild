@@ -134,13 +134,13 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary
 echo cd /d %BUILDDIR%
 cd /d %BUILDDIR%
 if "%BUILDTOOL%" == "ninja" (
-	echo %CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang -D CMAKE_BUILD_TYPE=%CONFIGURATION% %ROOTDIR% || goto onerror
+	echo %CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang -D CMAKE_BUILD_TYPE=%CONFIGURATION% %ROOTDIR%
 	%CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang -D CMAKE_BUILD_TYPE=%CONFIGURATION% %ROOTDIR% || goto onerror
 
 	echo %NINJA% -v package
 	%NINJA% -v package || goto onerror
 ) else if "%BUILDTOOL%" == "vs2017" (
-	echo %CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang %ROOTDIR% || goto onerror
+	echo %CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang %ROOTDIR%
 	%CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang %ROOTDIR% || goto onerror
 
 	echo %DEVENV% LLVM.sln  /build "Release|%PARAM_ARCH%"
