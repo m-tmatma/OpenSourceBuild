@@ -39,9 +39,10 @@ if "%REVISION%" == "" (
 )
 
 set CMAKE=cmake.exe
+set CPACK=cpack.exe
 set NINJA=ninja.exe
 set DEVENV="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.com"
-set ROOTDIR=%INITDIR%\llvm-%REVISION%
+set ROOTDIR=%INITDIR%\llvm\%REVISION%
 
 if "%CONFIGURATION%" == "" (
 	set BUILDDIR=%ROOTDIR%\build-%BUILDTOOL%-%BUILD_ARCH%
@@ -139,12 +140,18 @@ if "%BUILDTOOL%" == "ninja" (
 
 	echo %NINJA% -v package
 	%NINJA% -v package || goto onerror
+	
+	@rem echo %CPACK% -G WIX CPackConfig.cmake
+	@rem %CPACK% -G WIX CPackConfig.cmake
 ) else if "%BUILDTOOL%" == "vs2017" (
 	echo %CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang %ROOTDIR%
 	%CMAKE% -G %CMAKE_GENERATOR% -D CMAKE_INSTALL_PREFIX=c:\clang %ROOTDIR% || goto onerror
 
 	echo %DEVENV% LLVM.sln  /build "Release|%PARAM_ARCH%"
 	%DEVENV% LLVM.sln  /build "Release|%PARAM_ARCH%" || goto onerror
+
+	@rem echo %CPACK% -G WIX CPackConfig.cmake
+	@rem %CPACK% -G WIX CPackConfig.cmake
 )
 
 cd /d %INITDIR%\
